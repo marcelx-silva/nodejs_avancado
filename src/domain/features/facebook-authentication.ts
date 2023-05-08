@@ -1,5 +1,9 @@
 export interface FacebookAuthentication {
-    perform: (token: string) => AccessToken | Error
+    perform: (params: Params) => AccessToken | Error
+}
+
+type Params = {
+    token: string
 }
 
 type AccessToken = {
