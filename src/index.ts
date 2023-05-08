@@ -1,1 +1,1 @@
-console.log("Test")
+import '../config.js'
