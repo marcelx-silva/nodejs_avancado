@@ -1,3 +1,6 @@
+import {AccessToken} from "@/domain/models";
+import {AuthenticationError} from "@/domain/errors/authentication";
+
 export interface FacebookAuthentication {
     perform: (params: FacebookAuthentication.Params) => Promise<FacebookAuthentication.Result>
 }
@@ -8,15 +11,4 @@ namespace FacebookAuthentication {
     }
 
     export type Result = AccessToken | AuthenticationError
-}
-
-type AccessToken = {
-    accessToken: string
-}
-
-class AuthenticationError extends Error{
-    constructor() {
-        super("Authentication Failed");
-        this.name = "AuthenticationError"
-    }
 }
