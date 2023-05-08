@@ -1,5 +1,6 @@
 import {FacebookAuthentication} from "@/domain/features";
 import {AuthenticationError} from "@/domain/errors/authentication";
+import {LoadFacebookUserAPI} from "@/data/contracts/apis";
 
 export class FacebookAuthenticationService {
     constructor(
