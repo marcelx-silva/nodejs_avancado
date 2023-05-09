@@ -14,12 +14,18 @@ const makeSut = (): SutTypes => {
 }
 
 describe("FacebookAuthenticationUseCase", () =>{
-    it('should call user facebook api with correct params', async function () {
-        const {sut, loadFacebookUser} = makeSut()
-        await sut.perform({ token: 'any_token' })
+    let loadFacebookApi2: MockProxy<LoadFacebookUserAPI>
+    let sut2: FacebookAuthenticationService
 
-        expect(loadFacebookUser.loadUserByToken).toHaveBeenCalledWith({ token: 'any_token'})
-        expect(loadFacebookUser.loadUserByToken).toHaveBeenCalledTimes(1)
+    beforeEach(()=> {
+        loadFacebookApi2 = mock()
+        sut2 = new FacebookAuthenticationService(loadFacebookApi2)
+    })
+
+    it('should call user facebook api with correct params', async function () {
+        await sut2.perform({ token:'any_token' })
+        expect(loadFacebookApi2.loadUserByToken).toHaveBeenCalledWith({ token: 'any_token'})
+        expect(loadFacebookApi2.loadUserByToken).toHaveBeenCalledTimes(1)
     });
 
     it('should return authentication error when loadfacebookapi returns undefined', async function () {
