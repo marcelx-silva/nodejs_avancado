@@ -10,8 +10,7 @@ interface SutTypes {
 }
 describe('FacebookAuthenticationUseCase', () => {
   let loadFacebookApi2: MockProxy<LoadFacebookUserAPI>
-  let loadUserAccountRepo: MockProxy<LoadUserAccountRepository>
-  let createFacebookAccountRepo: MockProxy<CreateFacebookAccountRepository>
+  let userAccountRepo: MockProxy<LoadUserAccountRepository & CreateFacebookAccountRepository>
   let sut2: FacebookAuthenticationService
 
   beforeEach(() => {
@@ -21,9 +20,8 @@ describe('FacebookAuthenticationUseCase', () => {
       email: 'any_email',
       facebookId: 'any_id'
     })
-    loadUserAccountRepo = mock()
-    createFacebookAccountRepo = mock()
-    sut2 = new FacebookAuthenticationService(loadFacebookApi2, loadUserAccountRepo, createFacebookAccountRepo)
+    userAccountRepo = mock()
+    sut2 = new FacebookAuthenticationService(loadFacebookApi2, userAccountRepo)
   })
 
   it('should call user facebook api with correct params', async function () {
@@ -41,15 +39,15 @@ describe('FacebookAuthenticationUseCase', () => {
 
   it('should call LoadUserAccountRepository when LoadFacebookAPI returns data', async function () {
     await sut2.perform({ token: 'any_token' })
-    expect(loadUserAccountRepo.load).toHaveBeenCalledWith({ email: 'any_email' })
-    expect(loadUserAccountRepo.load).toHaveBeenCalledTimes(1)
+    expect(userAccountRepo.load).toHaveBeenCalledWith({ email: 'any_email' })
+    expect(userAccountRepo.load).toHaveBeenCalledTimes(1)
   })
 
   it('should call createUserAccountRepository when LoadUserAccountRepo returns undefined', async function () {
-    loadUserAccountRepo.load.mockResolvedValueOnce(undefined)
+    userAccountRepo.load.mockResolvedValueOnce(undefined)
     await sut2.perform({ token: 'any_token' })
-    expect(createFacebookAccountRepo.createFromFacebook).toHaveBeenCalledWith({ email: 'any_email', name: 'any_name', facebookId: 'any_id' })
-    expect(createFacebookAccountRepo.createFromFacebook).toHaveBeenCalledTimes(1)
+    expect(userAccountRepo.createFromFacebook).toHaveBeenCalledWith({ email: 'any_email', name: 'any_name', facebookId: 'any_id' })
+    expect(userAccountRepo.createFromFacebook).toHaveBeenCalledTimes(1)
   })
 })
 
