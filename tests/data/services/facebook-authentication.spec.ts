@@ -21,6 +21,7 @@ describe('FacebookAuthenticationUseCase', () => {
       facebookId: 'any_id'
     })
     userAccountRepo = mock()
+    userAccountRepo.load.mockResolvedValue(undefined)
     sut2 = new FacebookAuthenticationService(loadFacebookApi2, userAccountRepo)
   })
 
@@ -44,14 +45,21 @@ describe('FacebookAuthenticationUseCase', () => {
   })
 
   it('should call createUserAccountRepository when LoadUserAccountRepo returns undefined', async function () {
-    userAccountRepo.load.mockResolvedValueOnce(undefined)
     await sut2.perform({ token: 'any_token' })
     expect(userAccountRepo.createFromFacebook).toHaveBeenCalledWith({ email: 'any_email', name: 'any_name', facebookId: 'any_id' })
     expect(userAccountRepo.createFromFacebook).toHaveBeenCalledTimes(1)
   })
 
   it('should call UpdateFacebookAccountRepository when LoadUserAccount returns data', async function () {
-    userAccountRepo.load.mockResolvedValueOnce({ name: 'any_name', facebookId: 'any_id', id: 'any_id'})
+    userAccountRepo.load.mockResolvedValueOnce({ name: 'any_name', id: 'any_id'})
+    
+    await sut2.perform({ token: 'any_token' })
+    expect(userAccountRepo.updateWithFacebook).toHaveBeenCalledWith({ id: 'any_id', name: 'any_name', facebookId: 'any_id' })
+    expect(userAccountRepo.updateWithFacebook).toHaveBeenCalledTimes(1)
+  })
+
+  it('should updates user\'s name when when LoadUserAccount returns an user account without name', async function () {
+    userAccountRepo.load.mockResolvedValueOnce({ id: 'any_id'})
     
     await sut2.perform({ token: 'any_token' })
     expect(userAccountRepo.updateWithFacebook).toHaveBeenCalledWith({ id: 'any_id', name: 'any_name', facebookId: 'any_id' })
