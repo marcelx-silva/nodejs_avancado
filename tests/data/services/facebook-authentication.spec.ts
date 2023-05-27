@@ -2,8 +2,9 @@ import { AuthenticationError } from '@/domain/errors/authentication'
 import { FacebookAuthenticationService } from '@/data/services'
 import { any, mock, type MockProxy } from 'jest-mock-extended'
 import { type LoadFacebookUserAPI } from '@/data/contracts/apis'
-import { type LoadUserAccountRepository, SaveFacebookAccountRepository } from '@/data/contracts/apis/repository/UserAccount'
+import { LoadUserAccountRepository, SaveFacebookAccountRepository } from '@/data/contracts/repository/UserAccount'
 import { FacebookAccount } from '@/domain/models/FacebookAccount'
+import { TokenGenerator } from '@/data/contracts/crypto/TokenGenerator'
 
 // Esta linha é necessária para que o jest entenda que 
 //o arquivo que está sendo importado é um mock. 
@@ -14,10 +15,13 @@ interface SutTypes {
   sut: FacebookAuthenticationService
   loadFacebookUser: MockProxy<LoadFacebookUserAPI>
 }
+
+
 describe('FacebookAuthenticationUseCase', () => {
   let loadFacebookApi2: MockProxy<LoadFacebookUserAPI>
   let userAccountRepo: MockProxy<LoadUserAccountRepository & SaveFacebookAccountRepository>
   let sut2: FacebookAuthenticationService
+  let crypto: MockProxy<TokenGenerator>
 
   beforeEach(() => {
     loadFacebookApi2 = mock()
@@ -27,8 +31,10 @@ describe('FacebookAuthenticationUseCase', () => {
       facebookId: 'any_id'
     })
     userAccountRepo = mock()
-    userAccountRepo.load.mockResolvedValue(undefined)
-    sut2 = new FacebookAuthenticationService(loadFacebookApi2, userAccountRepo)
+    userAccountRepo.saveWithFacebook.mockResolvedValue({ id: 'any_account_id' })
+    crypto = mock()
+    sut2 = new FacebookAuthenticationService(loadFacebookApi2, userAccountRepo, crypto)
+    
   })
 
   it('should call user facebook api with correct params', async function () {
@@ -94,6 +100,13 @@ describe('FacebookAuthenticationUseCase', () => {
     await sut2.perform({ token: 'any_token' })
     expect(userAccountRepo.saveWithFacebook).toHaveBeenCalledWith({any: 'any'})
     expect(userAccountRepo.saveWithFacebook).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call TokenGenerator with correct params', async function () {
+    
+    await sut2.perform({ token: 'any_token' })
+    expect(crypto.generate).toHaveBeenCalledWith({key: 'any_account_id'})
+    expect(crypto.generate).toHaveBeenCalledTimes(1)
   })
 
 })
