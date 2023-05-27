@@ -1,4 +1,6 @@
 import { FacebookAccount } from "@/domain/models"
+import { deepEqual } from "assert"
+
 
 describe('FacebookAccount', () => {
   const fbData = {
