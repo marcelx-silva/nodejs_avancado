@@ -1,8 +1,8 @@
 import { type FacebookAuthentication } from '@/domain/features'
 import { AuthenticationError } from '@/domain/errors/authentication'
 import { type LoadFacebookUserAPI } from '@/data/contracts/apis'
-import { SaveFacebookAccountRepository, type LoadUserAccountRepository } from '@/data/contracts/apis/repository/UserAccount'
 import { FacebookAccount } from '@/domain/models'
+import { LoadUserAccountRepository, SaveFacebookAccountRepository } from '@/data/contracts/repository/UserAccount'
 
 export class FacebookAuthenticationService {
   constructor (
