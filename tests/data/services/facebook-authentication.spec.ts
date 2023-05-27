@@ -5,6 +5,7 @@ import { type LoadFacebookUserAPI } from '@/data/contracts/apis'
 import { LoadUserAccountRepository, SaveFacebookAccountRepository } from '@/data/contracts/repository/UserAccount'
 import { FacebookAccount } from '@/domain/models/FacebookAccount'
 import { TokenGenerator } from '@/data/contracts/crypto/TokenGenerator'
+import { AccessToken } from '@/domain/models'
 
 // Esta linha é necessária para que o jest entenda que 
 //o arquivo que está sendo importado é um mock. 
@@ -105,7 +106,7 @@ describe('FacebookAuthenticationUseCase', () => {
   it('should call TokenGenerator with correct params', async function () {
     
     await sut2.perform({ token: 'any_token' })
-    expect(crypto.generate).toHaveBeenCalledWith({key: 'any_account_id'})
+    expect(crypto.generate).toHaveBeenCalledWith({key: 'any_account_id', expires_in_ms: AccessToken.expirationInMilliseconds})
     expect(crypto.generate).toHaveBeenCalledTimes(1)
   })
 
