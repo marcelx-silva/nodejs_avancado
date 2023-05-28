@@ -13,13 +13,14 @@ export class FacebookAuthenticationService {
   ) {
   }
 
-  async perform (params: FacebookAuthentication.Params): Promise<AuthenticationError> {
+  async perform (params: FacebookAuthentication.Params): Promise<FacebookAuthentication.Result> {
     const fbData = await this.loadFacebookUserAPI.loadUserByToken(params)
     if (fbData !== undefined) { 
       const accountData = await this.userAccountRepository.load({ email: fbData.email })
       const fbAccount = new FacebookAccount(fbData, accountData)
       const { id } = await this.userAccountRepository.saveWithFacebook(fbAccount)
-      await this.crypto.generate({ key: id, expires_in_ms: AccessToken.expirationInMilliseconds })
+      const tokenId = await this.crypto.generate({ key: id, expires_in_ms: AccessToken.expirationInMilliseconds })
+      return new AccessToken(tokenId)
      }
     return new AuthenticationError()
   }
