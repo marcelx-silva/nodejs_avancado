@@ -26,7 +26,7 @@ describe('FacebookAuthenticationUseCase', () => {
 
   beforeEach(() => {
     loadFacebookApi2 = mock()
-    loadFacebookApi2.loadUserByToken.mockResolvedValueOnce({
+    loadFacebookApi2.loadUserByToken.mockResolvedValue({
       name: 'any_name',
       email: 'any_email',
       facebookId: 'any_id'
@@ -48,8 +48,7 @@ describe('FacebookAuthenticationUseCase', () => {
   it('should return authentication error when loadfacebookapi returns undefined', async function () {
     loadFacebookApi2.loadUserByToken.mockResolvedValueOnce(undefined)
     const authResult = await sut2.perform({ token: 'any_token' })
-
-    expect(authResult).toEqual(new AuthenticationError())
+    expect(authResult).toBeInstanceOf(AuthenticationError)
   })
 
   it('should call LoadUserAccountRepository when LoadFacebookAPI returns data', async function () {
