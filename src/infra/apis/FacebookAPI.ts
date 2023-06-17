@@ -9,7 +9,7 @@ export class FacebookAPI {
     private readonly clientSecret: string
   ){}
   async loadUserByToken (params: LoadFacebookUserAPI.Params, ): Promise<void> {
-    const apptoken = await this.httpClient.get({
+    const appToken = await this.httpClient.get({
       url: `${this.baseUrl}/oauth/access_token`,
       params: {
         client_id: this.clientId,
@@ -17,11 +17,18 @@ export class FacebookAPI {
         grant_type: 'any_grant_type'
       }
     })
-    await this.httpClient.get({
+    const debugToken = await this.httpClient.get({
       url: `${this.baseUrl}/debug_token`,
       params: {
-        access_token: apptoken.access_token,
+        access_token: appToken.access_token,
         input_token: params.token,
+      }
+    })
+    await this.httpClient.get({
+      url: `${this.baseUrl}/${debugToken.data.user_id}`,
+      params: {
+        fields: ['id', 'name', 'email'].join(','),
+        access_token: params.token
       }
     })
   }
