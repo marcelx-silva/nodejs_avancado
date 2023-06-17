@@ -24,19 +24,38 @@ describe('FacebookAuthenticationUseCase', () => {
   let sut2: FacebookAuthenticationService
   let crypto: MockProxy<TokenGenerator>
 
-  beforeEach(() => {
+  beforeAll(() => {
     loadFacebookApi2 = mock()
+    userAccountRepo = mock()
+    crypto = mock()
+
+    // Mocka o retorno do método loadUserByToken
     loadFacebookApi2.loadUserByToken.mockResolvedValue({
       name: 'any_name',
       email: 'any_email',
       facebookId: 'any_id'
     })
-    userAccountRepo = mock()
+    // Mocka o retorno do método saveWithFacebook
     userAccountRepo.saveWithFacebook.mockResolvedValue({ id: 'any_account_id' })
-    crypto = mock()
-    crypto.generate.mockResolvedValue('any_generated_token')
+
+    // Cria uma instância do SUT com os mocks criados acima
     sut2 = new FacebookAuthenticationService(loadFacebookApi2, userAccountRepo, crypto)
+
+    // Mocka o retorno do método generate
+    crypto.generate.mockResolvedValue('any_generated_token')
+  })
+
+  beforeEach(() => {
+    // Limpa o mock de todas as chamadas feitas anteriormente
+    jest.clearAllMocks()
     
+    // Cria um novo mock para cada teste
+    sut2 = new FacebookAuthenticationService(
+      loadFacebookApi2, 
+      userAccountRepo, 
+      crypto
+    )
+
   })
 
   it('should call user facebook api with correct params', async function () {
