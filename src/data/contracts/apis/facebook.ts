@@ -6,7 +6,7 @@ export namespace LoadFacebookUserAPI {
   export interface Params {
     token: string
   }
-  export type Result = undefined | UserData
+  export type Result = UserData | undefined 
 
   export interface UserData {
     name: string
